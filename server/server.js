@@ -20,6 +20,8 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
 
 // App Initialization
 const app = express();
@@ -52,6 +54,13 @@ const razorpay = new Razorpay({
 });
 console.log("Razorpay initialized");
 
+// Cloudinary Configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 // Middleware
 app.use(express.json({ limit: "10mb" }));
 app.use(cors());
@@ -64,18 +73,20 @@ if (!fs.existsSync(publicPath)) {
 app.use(express.static(publicPath));
 
 // Multer Setup
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = "public/uploads";
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     const uploadDir = "public/uploads";
+//     if (!fs.existsSync(uploadDir)) {
+//       fs.mkdirSync(uploadDir, { recursive: true });
+//     }
+//     cb(null, uploadDir);
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + "-" + file.originalname);
+//   },
+// });
+
+const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
@@ -86,6 +97,19 @@ const upload = multer({
     cb(null, true);
   },
 });
+
+function uploadToCloudinary(buffer, folderName) {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: folderName },
+      (error, result) => {
+        if (result) resolve(result.secure_url);
+        else reject(error);
+      }
+    );
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
+}
 
 //Signup page
 var signupSchema = mongoose.Schema(
@@ -284,22 +308,19 @@ var catSchema = mongoose.Schema(
 var CatModel = mongoose.model("category", catSchema, "category");
 
 app.post("/api/savecategory", upload.single("catpic"), async (req, res) => {
-  var picturename;
-  if (!req.file) {
-    picturename = "noimage.jpg";
-  } else {
-    picturename = req.file.filename;
+  let picturename = "noimage.jpg";
+
+  if (req.file) {
+    picturename = await uploadToCloudinary(req.file.buffer, "categories");
   }
-  var newrecord = new CatModel({
+
+  const newrecord = new CatModel({
     catname: req.body.catname,
     catpic: picturename,
   });
-  var result = await newrecord.save();
-  if (result) {
-    res.status(200).send({ statuscode: 1 });
-  } else {
-    res.status(200).send({ statuscode: 0 });
-  }
+
+  const result = await newrecord.save();
+  res.status(200).send({ statuscode: result ? 1 : 0 });
 });
 
 app.get("/api/getallcat", async (req, res) => {
@@ -314,32 +335,24 @@ app.get("/api/getallcat", async (req, res) => {
 
 app.put("/api/updatecategory", upload.single("catpic"), async (req, res) => {
   try {
-    var picturename;
-    if (!req.file) {
-      picturename = req.body.oldpicname;
-    } else {
-      picturename = req.file.filename;
+    let picturename = req.body.oldpicname;
 
-      if (req.body.oldpicname !== "noimage.jpg") {
-        fs.unlinkSync(`public/uploads/${req.body.oldpicname}`);
-      }
+    if (req.file) {
+      picturename = await uploadToCloudinary(req.file.buffer, "categories");
     }
 
-    var updateresult = await CatModel.updateOne(
+    const updateresult = await CatModel.updateOne(
       { _id: req.body.cid },
       { $set: { catname: req.body.catname, catpic: picturename } }
     );
 
-    if (updateresult.modifiedCount === 1) {
-      res.status(200).send({ statuscode: 1 });
-    } else {
-      res.status(500).send({ statuscode: 0 });
-    }
+    res.status(200).send({ statuscode: updateresult.modifiedCount === 1 ? 1 : 0 });
   } catch (e) {
     console.log(e);
-    res.status(500).send({ statuscode: -1, msg: "Some error occured" });
+    res.status(500).send({ statuscode: -1, msg: "Some error occurred" });
   }
 });
+
 app.delete("/api/delcat/:cid", async (req, res) => {
   var result = await CatModel.deleteOne({ _id: req.params.cid });
   if (result.deletedCount === 1) {
@@ -357,29 +370,22 @@ var subcatSchema = mongoose.Schema(
 
 var SubCatModel = mongoose.model("subcategory", subcatSchema, "subcategory");
 
-app.post(
-  "/api/savesubcategory",
-  upload.single("subcatpic"),
-  async (req, res) => {
-    var picturename;
-    if (!req.file) {
-      picturename = "noimage.jpg";
-    } else {
-      picturename = req.file.filename;
-    }
-    var newrecord = new SubCatModel({
-      subcatname: req.body.subcatname,
-      subcatpic: picturename,
-      catid: req.body.categoryid,
-    });
-    var result = await newrecord.save();
-    if (result) {
-      res.status(200).send({ statuscode: 1 });
-    } else {
-      res.status(200).send({ statuscode: 0 });
-    }
+app.post("/api/savesubcategory", upload.single("subcatpic"), async (req, res) => {
+  let picturename = "noimage.jpg";
+
+  if (req.file) {
+    picturename = await uploadToCloudinary(req.file.buffer, "subcategories");
   }
-);
+
+  const newrecord = new SubCatModel({
+    subcatname: req.body.subcatname,
+    subcatpic: picturename,
+    catid: req.body.categoryid,
+  });
+
+  const result = await newrecord.save();
+  res.status(200).send({ statuscode: result ? 1 : 0 });
+});
 
 app.get("/api/getallsubcat", async (req, res) => {
   var result = await SubCatModel.find({ catid: req.query.cid });
@@ -390,44 +396,31 @@ app.get("/api/getallsubcat", async (req, res) => {
   }
 });
 
-app.put(
-  "/api/updatesubcategory",
-  upload.single("subcatpic"),
-  async (req, res) => {
-    try {
-      var picturename;
-      if (!req.file) {
-        picturename = req.body.oldpicname;
-      } else {
-        picturename = req.file.filename;
+app.put("/api/updatesubcategory", upload.single("subcatpic"), async (req, res) => {
+  try {
+    let picturename = req.body.oldpicname;
 
-        if (req.body.oldpicname !== "noimage.jpg") {
-          fs.unlinkSync(`uploads/${req.body.oldpicname}`);
-        }
-      }
-
-      var updateresult = await SubCatModel.updateOne(
-        { _id: req.body.subcatid },
-        {
-          $set: {
-            subcatname: req.body.subcatname,
-            subcatpic: picturename,
-            catid: req.body.categoryid,
-          },
-        }
-      );
-
-      if (updateresult.modifiedCount === 1) {
-        res.status(200).send({ statuscode: 1 });
-      } else {
-        res.status(500).send({ statuscode: 0 });
-      }
-    } catch (e) {
-      console.log(e);
-      res.status(500).send({ statuscode: -1, msg: "Some error occurred" });
+    if (req.file) {
+      picturename = await uploadToCloudinary(req.file.buffer, "subcategories");
     }
+
+    const updateresult = await SubCatModel.updateOne(
+      { _id: req.body.subcatid },
+      {
+        $set: {
+          subcatname: req.body.subcatname,
+          subcatpic: picturename,
+          catid: req.body.categoryid,
+        },
+      }
+    );
+
+    res.status(200).send({ statuscode: updateresult.modifiedCount === 1 ? 1 : 0 });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send({ statuscode: -1, msg: "Some error occurred" });
   }
-);
+});
 
 app.delete("/api/delsubcat/:sid", async (req, res) => {
   var result = await SubCatModel.deleteOne({ _id: req.params.sid });
@@ -456,13 +449,13 @@ var prodSchema = mongoose.Schema(
 var ProdModel = mongoose.model("product", prodSchema, "product");
 
 app.post("/api/saveproduct", upload.single("picture"), async (req, res) => {
-  var picturename;
-  if (!req.file) {
-    picturename = "noimage.jpg";
-  } else {
-    picturename = req.file.filename;
+  let picturename = "noimage.jpg";
+
+  if (req.file) {
+    picturename = await uploadToCloudinary(req.file.buffer, "products");
   }
-  var newrecord = new ProdModel({
+
+  const newrecord = new ProdModel({
     catid: req.body.catid,
     subcatid: req.body.subcatid,
     pname: req.body.pname,
@@ -474,13 +467,8 @@ app.post("/api/saveproduct", upload.single("picture"), async (req, res) => {
     addedon: new Date(),
   });
 
-  var result = await newrecord.save();
-
-  if (result) {
-    res.status(200).send({ statuscode: 1 });
-  } else {
-    res.status(200).send({ statuscode: 0 });
-  }
+  const result = await newrecord.save();
+  res.status(200).send({ statuscode: result ? 1 : 0 });
 });
 
 app.get("/api/fetchprodsbycatid", async (req, res) => {
@@ -528,9 +516,9 @@ app.delete("/api/delproduct/:id", async (req, res) => {
 // Update product
 app.put("/api/updateproduct", upload.single("picture"), async (req, res) => {
   try {
-    const { catid, subcatid, pname, rate, dis, stock, descp, oldpicname, pid } =
-      req.body;
-    let updateData = {
+    const { catid, subcatid, pname, rate, dis, stock, descp, oldpicname, pid } = req.body;
+
+    const updateData = {
       catid,
       subcatid,
       pname,
@@ -540,22 +528,10 @@ app.put("/api/updateproduct", upload.single("picture"), async (req, res) => {
       Description: descp,
     };
 
-    // If new picture is uploaded
     if (req.file) {
-      updateData.picture = req.file.filename;
-
-      // Delete old picture if it exists
-      if (oldpicname) {
-        const oldPicPath = path.join(
-          __dirname,
-          "public",
-          "uploads",
-          oldpicname
-        );
-        if (fs.existsSync(oldPicPath)) {
-          fs.unlinkSync(oldPicPath);
-        }
-      }
+      updateData.picture = await uploadToCloudinary(req.file.buffer, "products");
+    } else {
+      updateData.picture = oldpicname;
     }
 
     const result = await ProdModel.updateOne(
@@ -563,15 +539,12 @@ app.put("/api/updateproduct", upload.single("picture"), async (req, res) => {
       { $set: updateData }
     );
 
-    if (result.modifiedCount > 0) {
-      res
-        .status(200)
-        .send({ statuscode: 1, message: "Product updated successfully" });
-    } else {
-      res
-        .status(200)
-        .send({ statuscode: 0, message: "No changes made to the product" });
-    }
+    res.status(200).send({
+      statuscode: result.modifiedCount > 0 ? 1 : 0,
+      message: result.modifiedCount > 0
+        ? "Product updated successfully"
+        : "No changes made to the product"
+    });
   } catch (error) {
     console.error("Error updating product:", error);
     res.status(500).send({
@@ -581,6 +554,7 @@ app.put("/api/updateproduct", upload.single("picture"), async (req, res) => {
     });
   }
 });
+
 
 //Show Cart
 var cartSchema = mongoose.Schema(
