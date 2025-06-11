@@ -17,7 +17,7 @@ function OrderHistory() {
     try {
       setLoading(true);
       setError(null);
-      const resp = await axios.get(`http://localhost:9000/api/getuserorders?un=${udata.username}`);
+      const resp = await axios.get(`${process.env.REACT_APP_BACKEND}/api/getuserorders?un=${udata.username}`);
 
       if (resp.data.statuscode === 1) {
         const sortedOrders = resp.data.ordersdata.sort((a, b) => new Date(b.OrderDate) - new Date(a.OrderDate));

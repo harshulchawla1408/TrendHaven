@@ -37,7 +37,7 @@ function Home() {
     setError(null);
 
     try {
-      const resp = await axios.get(`http://localhost:9000/api/fetchnewprods`, {
+      const resp = await axios.get(`${process.env.REACT_APP_BACKEND}/api/fetchnewprods`, {
         timeout: 4000,
       });
 

@@ -6,7 +6,7 @@ function ViewOrders() {
   const navigate = useNavigate();
   async function fetchorders() {
     try {
-      const resp = await axios.get("http://localhost:9000/api/getallorders");
+      const resp = await axios.get(`${process.env.REACT_APP_BACKEND}/api/getallorders`);
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {
           setordersdata(resp.data.ordersdata);

@@ -21,7 +21,7 @@ function OrderItems() {
       setError(null);
 
       const resp = await axios.get(
-        `http://localhost:9000/api/getorderproducts?orderno=${orderid}`
+        `${process.env.REACT_APP_BACKEND}/api/getorderproducts?orderno=${orderid}`
       );
 
       if (resp.status === 200) {

@@ -16,7 +16,7 @@ function SearchProducts() {
   async function searchprods() {
     try {
       const resp = await axios.get(
-        `http://localhost:9000/api/searchproducts?q=${sterm}`
+        `${process.env.REACT_APP_BACKEND}/api/searchproducts?q=${sterm}`
       );
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {

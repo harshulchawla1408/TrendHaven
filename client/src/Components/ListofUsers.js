@@ -8,7 +8,7 @@ function ListofUsers() {
 
   async function fetchusers() {
     try {
-      const resp = await axios.get("http://localhost:9000/api/getallusers");
+      const resp = await axios.get(`${process.env.REACT_APP_BACKEND}/api/getallusers`);
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {
           setmembsdata(resp.data.membersdata);
@@ -30,7 +30,7 @@ function ListofUsers() {
     var userresp = window.confirm("Are you sure to delete");
     if (userresp === true) {
       const resp = await axios.delete(
-        `http://localhost:9000/api/deluser/${id}`
+        `${process.env.REACT_APP_BACKEND}/api/deluser/${id}`
       );
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {

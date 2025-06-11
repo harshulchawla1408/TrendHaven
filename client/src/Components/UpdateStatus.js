@@ -12,7 +12,7 @@ function UpdateStatus() {
     const updatedata = { newst, orderid };
     try {
       const resp = await axios.put(
-        "http://localhost:9000/api/updatestatus",
+        `${process.env.REACT_APP_BACKEND}/api/updatestatus`,
         updatedata
       );
       if (resp.status === 200) {

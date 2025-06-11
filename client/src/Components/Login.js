@@ -14,7 +14,7 @@ function Login() {
     e.preventDefault();
     const logindata = { uname, pass };
     try {
-      const resp = await axios.post("http://localhost:9000/api/login", logindata);
+      const resp = await axios.post(`${process.env.REACT_APP_BACKEND}/api/login`, logindata);
       if (resp.status === 200) {
         if (resp.data.statuscode === 0) {
           toast.warn("Incorrect Username/Password");

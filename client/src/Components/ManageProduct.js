@@ -25,7 +25,7 @@ function ManageProduct() {
 
   async function fetchallcat() {
     try {
-      const resp = await axios.get("http://localhost:9000/api/getallcat");
+      const resp = await axios.get(`${process.env.REACT_APP_BACKEND}/api/getallcat`);
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {
           setcatdata(resp.data.catdata);
@@ -53,7 +53,7 @@ function ManageProduct() {
   async function fetchallsubcat() {
     try {
       const resp = await axios.get(
-        `http://localhost:9000/api/getallsubcat?cid=${catid}`
+        `${process.env.REACT_APP_BACKEND}/api/getallsubcat?cid=${catid}`
       );
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {
@@ -91,7 +91,7 @@ function ManageProduct() {
   async function fetchProdsBySubcat() {
     try {
       const resp = await axios.get(
-        `http://localhost:9000/api/fetchprodsbysubcatid?sid=${subcatid}`
+        `${process.env.REACT_APP_BACKEND}/api/fetchprodsbysubcatid?sid=${subcatid}`
       );
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {
@@ -125,7 +125,7 @@ function ManageProduct() {
       }
 
       const resp = await axios.post(
-        `http://localhost:9000/api/saveproduct`,
+        `${process.env.REACT_APP_BACKEND}/api/saveproduct`,
         formdata
       );
       if (resp.status === 200) {
@@ -163,7 +163,7 @@ function ManageProduct() {
       formdata.append("pid", pid);
 
       const resp = await axios.put(
-        `http://localhost:9000/api/updateproduct`,
+        `${process.env.REACT_APP_BACKEND}/api/updateproduct`,
         formdata
       );
       if (resp.status === 200) {
@@ -186,7 +186,7 @@ function ManageProduct() {
     var userresp = window.confirm("Are you sure to delete this product?");
     if (userresp === true) {
       const resp = await axios.delete(
-        `http://localhost:9000/api/delproduct/${id}`
+        `${process.env.REACT_APP_BACKEND}/api/delproduct/${id}`
       );
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {

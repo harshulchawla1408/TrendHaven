@@ -68,7 +68,7 @@ Need help picking your next outfit or decoding the latest trend? Type away, fash
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:9000/api/chat", {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

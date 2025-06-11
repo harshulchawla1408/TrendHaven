@@ -8,7 +8,7 @@ function Categories() {
 
   async function fetchallcat() {
     try {
-      const resp = await axios.get("http://localhost:9000/api/getallcat");
+      const resp = await axios.get(`${process.env.REACT_APP_BACKEND}/api/getallcat`);
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {
           setcatdata(resp.data.catdata);

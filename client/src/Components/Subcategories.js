@@ -10,7 +10,7 @@ function Subcategories() {
   async function fetchsubcatbycat() {
     try {
       const resp = await axios.get(
-        `http://localhost:9000/api/getallsubcat?cid=${catid}`
+        `${process.env.REACT_APP_BACKEND}/api/getallsubcat?cid=${catid}`
       );
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {

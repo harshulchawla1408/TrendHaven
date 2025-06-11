@@ -30,7 +30,7 @@ function ManageSubCategory() {
 
   async function fetchAllCategories() {
     try {
-      const resp = await axios.get("http://localhost:9000/api/getallcat");
+      const resp = await axios.get(`${process.env.REACT_APP_BACKEND}/api/getallcat`);
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {
           setcatdata(resp.data.catdata);
@@ -48,7 +48,7 @@ function ManageSubCategory() {
   async function fetchAllSubCategories() {
     try {
       const resp = await axios.get(
-        `http://localhost:9000/api/getallsubcat?cid=${catid}`
+        `${process.env.REACT_APP_BACKEND}/api/getallsubcat?cid=${catid}`
       );
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {
@@ -83,7 +83,7 @@ function ManageSubCategory() {
         formdata.append("subcatpic", subcatpic);
       }
       const resp = await axios.post(
-        `http://localhost:9000/api/savesubcategory`,
+        `${process.env.REACT_APP_BACKEND}/api/savesubcategory`,
         formdata
       );
       if (resp.status === 200) {
@@ -113,7 +113,7 @@ function ManageSubCategory() {
       formdata.append("oldpicname", picname);
       formdata.append("subcatid", subcatid);
       const resp = await axios.put(
-        `http://localhost:9000/api/updatesubcategory`,
+        `${process.env.REACT_APP_BACKEND}/api/updatesubcategory`,
         formdata
       );
       if (resp.status === 200) {
@@ -136,7 +136,7 @@ function ManageSubCategory() {
     var userresp = window.confirm("Are you sure to delete this subcategory");
     if (userresp === true) {
       const resp = await axios.delete(
-        `http://localhost:9000/api/delsubcat/${id}`
+        `${process.env.REACT_APP_BACKEND}/api/delsubcat/${id}`
       );
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {

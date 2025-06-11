@@ -28,7 +28,7 @@ function ManageCategory() {
 
   async function fetchallcat() {
     try {
-      const resp = await axios.get("http://localhost:9000/api/getallcat");
+      const resp = await axios.get(`${process.env.REACT_APP_BACKEND}/api/getallcat`);
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {
           setcatdata(resp.data.catdata);
@@ -55,7 +55,7 @@ function ManageCategory() {
         formdata.append("catpic", cpic);
       }
       const resp = await axios.post(
-        `http://localhost:9000/api/savecategory`,
+        `${process.env.REACT_APP_BACKEND}/api/savecategory`,
         formdata
       );
       if (resp.status === 200) {
@@ -84,7 +84,7 @@ function ManageCategory() {
       formdata.append("oldpicname", picname);
       formdata.append("cid", catid);
       const resp = await axios.put(
-        `http://localhost:9000/api/updatecategory`,
+        `${process.env.REACT_APP_BACKEND}/api/updatecategory`,
         formdata
       );
       if (resp.status === 200) {
@@ -105,7 +105,7 @@ function ManageCategory() {
   async function oncatdel(id) {
     var userresp = window.confirm("Are you sure to delete this category");
     if (userresp === true) {
-      const resp = await axios.delete(`http://localhost:9000/api/delcat/${id}`);
+      const resp = await axios.delete(`${process.env.REACT_APP_BACKEND}/api/delcat/${id}`);
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {
           toast.success("Category deleted successfully");

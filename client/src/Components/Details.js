@@ -77,7 +77,7 @@ function Details() {
 
     try {
       const resp = await axios.get(
-        `http://localhost:9000/api/getproddetails?pid=${prodid}`
+        `${process.env.REACT_APP_BACKEND}/api/getproddetails?pid=${prodid}`
       );
 
       let productData = null;
@@ -89,7 +89,7 @@ function Details() {
       ) {
         productData = resp.data.data;
       } else if (resp.data?.statuscode === 1 && resp.data.product) {
-        productData = resp.data.product;
+        productData = resp.data.product; 
       } else if (resp.data?.statuscode === 1 && resp.data.proddata) {
         productData = resp.data.proddata;
       }

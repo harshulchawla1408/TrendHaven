@@ -10,7 +10,7 @@ function SearchUser() {
     e.preventDefault();
     try {
       const resp = await axios.get(
-        `http://localhost:9000/api/searchuser?un=${uname}`
+        `${process.env.REACT_APP_BACKEND}/api/searchuser?un=${uname}`
       );
       if (resp.status === 200) {
         if (resp.data.statuscode === 0) {

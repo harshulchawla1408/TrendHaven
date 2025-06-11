@@ -100,7 +100,7 @@ function CheckoutPage() {
         };
 
         const orderRes = await axios.post(
-          "http://localhost:9000/api/saveorder",
+          `${process.env.REACT_APP_BACKEND}/api/saveorder`,
           orderData
         );
 
@@ -187,7 +187,7 @@ function CheckoutPage() {
 
     try {
       const { data: razorpayOrder } = await axios.post(
-        "http://localhost:9000/api/payment/order",
+        `${process.env.REACT_APP_BACKEND}/api/payment/order`,
         {
           amount: totalBill,
           amountInRupees: true,
@@ -212,7 +212,7 @@ function CheckoutPage() {
         handler: async (response) => {
           try {
             const verifyRes = await axios.post(
-              "http://localhost:9000/api/payment/verify",
+              `${process.env.REACT_APP_BACKEND}/api/payment/verify`,
               {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
@@ -257,7 +257,7 @@ function CheckoutPage() {
 
 
               const orderRes = await axios.post(
-                "http://localhost:9000/api/saveorder",
+                `${process.env.REACT_APP_BACKEND}/api/saveorder`,
                 orderData
               );
 

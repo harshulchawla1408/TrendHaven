@@ -19,7 +19,7 @@ function Signup() {
       if (pass === cpass) {
         const regdata = { name, phone, uname, pass };
         try {
-          const resp = await axios.post("http://localhost:9000/api/signup", regdata);
+          const resp = await axios.post(`${process.env.REACT_APP_BACKEND}/api/signup`, regdata);
           toast.success("Signup successful");
           navigate("/login");
         } catch (err) {

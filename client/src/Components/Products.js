@@ -42,7 +42,7 @@ function Products() {
   async function fetchprodsbysubcat() {
     try {
       const resp = await axios.get(
-        `http://localhost:9000/api/fetchprodsbysubcatid?sid=${subcatid}`
+        `${process.env.REACT_APP_BACKEND}/api/fetchprodsbysubcatid?sid=${subcatid}`
       );
       if (resp.status === 200) {
         if (resp.data.statuscode === 1) {

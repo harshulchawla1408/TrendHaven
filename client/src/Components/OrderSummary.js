@@ -58,7 +58,7 @@ function OrderSummary() {
       // First, try to get the specific order directly
       try {
         const orderRes = await axios.get(
-          `http://localhost:9000/api/getorderbyid?orderid=${orderId}`
+          `${process.env.REACT_APP_BACKEND}/api/getorderbyid?orderid=${orderId}`
         );
 
         if (orderRes.data.statuscode === 1 && orderRes.data.order) {
@@ -75,7 +75,7 @@ function OrderSummary() {
 
           // Get order items
           const itemsRes = await axios.get(
-            `http://localhost:9000/api/getorderproducts?orderno=${orderId}`
+            `${process.env.REACT_APP_BACKEND}/api/getorderproducts?orderno=${orderId}`
           );
 
           if (itemsRes.data.statuscode === 1) {
@@ -97,7 +97,7 @@ function OrderSummary() {
 
       // Fallback: Get all user orders and find the specific one
       const ordersRes = await axios.get(
-        `http://localhost:9000/api/getuserorders?un=${udata.username}`
+        `${process.env.REACT_APP_BACKEND}/api/getuserorders?un=${udata.username}`
       );
 
       if (ordersRes.data.statuscode === 1) {
@@ -119,7 +119,7 @@ function OrderSummary() {
 
           // Get order items
           const itemsRes = await axios.get(
-            `http://localhost:9000/api/getorderproducts?orderno=${orderId}`
+            `${process.env.REACT_APP_BACKEND}/api/getorderproducts?orderno=${orderId}`
           );
 
           if (itemsRes.data.statuscode === 1) {
