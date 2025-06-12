@@ -72,32 +72,19 @@ if (!fs.existsSync(publicPath)) {
 }
 app.use(express.static(publicPath));
 
-// Multer Setup
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     const uploadDir = "public/uploads";
-//     if (!fs.existsSync(uploadDir)) {
-//       fs.mkdirSync(uploadDir, { recursive: true });
-//     }
-//     cb(null, uploadDir);
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, Date.now() + "-" + file.originalname);
-//   },
-// });
-
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 5 * 1024 * 1024 }, // Max 5MB
   fileFilter: (req, file, cb) => {
     if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
-      return cb(new Error("Only image files allowed!"), false);
+      return cb(new Error("Only image files are allowed!"), false);
     }
     cb(null, true);
   },
 });
 
+// Function to upload to Cloudinary
 function uploadToCloudinary(buffer, folderName) {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
@@ -449,26 +436,32 @@ var prodSchema = mongoose.Schema(
 var ProdModel = mongoose.model("product", prodSchema, "product");
 
 app.post("/api/saveproduct", upload.single("picture"), async (req, res) => {
-  let picturename = "noimage.jpg";
+  try {
+    let picturename = "noimage.jpg";
 
-  if (req.file) {
-    picturename = await uploadToCloudinary(req.file.buffer, "products");
+    if (req.file) {
+      picturename = await uploadToCloudinary(req.file.buffer, "products");
+    }
+
+    const newrecord = new ProdModel({
+      catid: req.body.catid,
+      subcatid: req.body.subcatid,
+      pname: req.body.pname,
+      Rate: req.body.rate,
+      Discount: req.body.dis,
+      Stock: req.body.stock,
+      Description: req.body.descp,
+      picture: picturename,
+      addedon: new Date(),
+    });
+
+    const result = await newrecord.save();
+    console.log("Saved Product: ", result);
+    res.status(200).send({ statuscode: result ? 1 : 0 });
+  } catch (err) {
+    console.error("Error uploading product:", err);
+    res.status(500).send({ statuscode: -1, msg: "Upload failed" });
   }
-
-  const newrecord = new ProdModel({
-    catid: req.body.catid,
-    subcatid: req.body.subcatid,
-    pname: req.body.pname,
-    Rate: req.body.rate,
-    Discount: req.body.dis,
-    Stock: req.body.stock,
-    Description: req.body.descp,
-    picture: picturename,
-    addedon: new Date(),
-  });
-
-  const result = await newrecord.save();
-  res.status(200).send({ statuscode: result ? 1 : 0 });
 });
 
 app.get("/api/fetchprodsbycatid", async (req, res) => {

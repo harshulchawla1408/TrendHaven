@@ -38,22 +38,31 @@ export const CartProvider = ({ children }) => {
   };
 
   const loadCartFromLocalStorage = useCallback(() => {
-    try {
-      const savedCart = localStorage.getItem("cart");
-      if (savedCart) {
-        const parsed = JSON.parse(savedCart);
-        if (Array.isArray(parsed)) {
-          setCartItems(parsed);
-          updateItemCount(parsed);
-        } else {
-          console.warn("Invalid cart structure in localStorage");
-          localStorage.removeItem("cart");
-        }
-      }
-    } catch (err) {
-      console.error("Error loading cart from localStorage:", err);
+  try {
+    const savedCart = localStorage.getItem("cart");
+    const user = JSON.parse(localStorage.getItem("user")); // 👈 Check for user
+
+    if (!user) {
+      // If not logged in, don't load cart (or clear it optionally)
+      localStorage.removeItem("cart");
+      return;
     }
-  }, [updateItemCount]);
+
+    if (savedCart) {
+      const parsed = JSON.parse(savedCart);
+      if (Array.isArray(parsed)) {
+        setCartItems(parsed);
+        updateItemCount(parsed);
+      } else {
+        console.warn("Invalid cart structure in localStorage");
+        localStorage.removeItem("cart");
+      }
+    }
+  } catch (err) {
+    console.error("Error loading cart from localStorage:", err);
+  }
+}, [updateItemCount]);
+
 
   // ✅ Load cart on first render
   useEffect(() => {
