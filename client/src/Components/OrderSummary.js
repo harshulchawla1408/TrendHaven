@@ -181,10 +181,6 @@ function OrderSummary() {
               <p>
                 <strong>Total Amount:</strong> ₹{orderinfo.billamt?.toFixed(2)}
               </p>
-              <p>
-                <strong>Delivery Address:</strong>{" "}
-                {orderinfo.saddr || "Not specified"}
-              </p>
             </div>
           </div>
         </div>
