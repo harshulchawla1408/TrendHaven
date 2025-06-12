@@ -22,7 +22,8 @@ function OrderSummary() {
   } = location.state || {};
 
   const orderIdFromUrl = new URLSearchParams(location.search).get("orderId");
-  const orderId = stateOrderId || orderIdFromUrl || sessionStorage.getItem("lastOrderId");
+  const orderId =
+    stateOrderId || orderIdFromUrl || sessionStorage.getItem("lastOrderId");
 
   useEffect(() => {
     if (stateShippingAddress) setShippingAddress(stateShippingAddress);
@@ -37,31 +38,52 @@ function OrderSummary() {
     }
     try {
       setLoading(true);
-      const orderRes = await axios.get(`${process.env.REACT_APP_BACKEND}/api/getorderbyid?orderid=${orderId}`);
+      const orderRes = await axios.get(
+        `${process.env.REACT_APP_BACKEND}/api/getorderbyid?orderid=${orderId}`
+      );
       if (orderRes.data.statuscode === 1 && orderRes.data.order) {
         const orderData = orderRes.data.order;
         setOrderInfo(orderData);
-        if (orderData.saddr && !shippingAddress) setShippingAddress(orderData.saddr);
-        if (orderData.PayMode && !paymentMethod) setPaymentMethod(orderData.PayMode);
-        const itemsRes = await axios.get(`${process.env.REACT_APP_BACKEND}/api/getorderproducts?orderno=${orderId}`);
+        if (orderData.saddr && !shippingAddress)
+          setShippingAddress(orderData.saddr);
+        if (orderData.PayMode && !paymentMethod)
+          setPaymentMethod(orderData.PayMode);
+
+        const itemsRes = await axios.get(
+          `${process.env.REACT_APP_BACKEND}/api/getorderproducts?orderno=${orderId}`
+        );
         if (itemsRes.data.statuscode === 1) {
-          setOrderItems(Array.isArray(itemsRes.data.items) ? itemsRes.data.items : []);
+          setOrderItems(
+            Array.isArray(itemsRes.data.items) ? itemsRes.data.items : []
+          );
         }
         return;
       }
-    } catch {}
+    } catch (error) {
+      console.error("First fetch failed", error);
+    } finally {
+      setLoading(false); // <<=== THIS IS IMPORTANT
+    }
 
     try {
-      const ordersRes = await axios.get(`${process.env.REACT_APP_BACKEND}/api/getuserorders?un=${udata.username}`);
+      const ordersRes = await axios.get(
+        `${process.env.REACT_APP_BACKEND}/api/getuserorders?un=${udata.username}`
+      );
       if (ordersRes.data.statuscode === 1) {
-        const order = Array.isArray(ordersRes.data.ordersdata) ? ordersRes.data.ordersdata.find((o) => o._id === orderId) : null;
+        const order = Array.isArray(ordersRes.data.ordersdata)
+          ? ordersRes.data.ordersdata.find((o) => o._id === orderId)
+          : null;
         if (order) {
           setOrderInfo(order);
           if (order.saddr && !shippingAddress) setShippingAddress(order.saddr);
           if (order.PayMode && !paymentMethod) setPaymentMethod(order.PayMode);
-          const itemsRes = await axios.get(`${process.env.REACT_APP_BACKEND}/api/getorderproducts?orderno=${orderId}`);
+          const itemsRes = await axios.get(
+            `${process.env.REACT_APP_BACKEND}/api/getorderproducts?orderno=${orderId}`
+          );
           if (itemsRes.data.statuscode === 1) {
-            setOrderItems(Array.isArray(itemsRes.data.items) ? itemsRes.data.items : []);
+            setOrderItems(
+              Array.isArray(itemsRes.data.items) ? itemsRes.data.items : []
+            );
           }
         } else {
           toast.error("Order not found or access denied.");
@@ -143,13 +165,26 @@ function OrderSummary() {
           <h3 className="mb-4">Order #{orderinfo._id}</h3>
           <div className="row g-3">
             <div className="col-md-6 col-12">
-              <p><strong>Order Date:</strong> {new Date(orderinfo.OrderDate).toLocaleString()}</p>
-              <p><strong>Payment Mode:</strong> {orderinfo.PayMode || "N/A"}</p>
-              <p><strong>Status:</strong> <span className="badge bg-success">Paid</span></p>
+              <p>
+                <strong>Order Date:</strong>{" "}
+                {new Date(orderinfo.OrderDate).toLocaleString()}
+              </p>
+              <p>
+                <strong>Payment Mode:</strong> {orderinfo.PayMode || "N/A"}
+              </p>
+              <p>
+                <strong>Status:</strong>{" "}
+                <span className="badge bg-success">Paid</span>
+              </p>
             </div>
             <div className="col-md-6 col-12">
-              <p><strong>Total Amount:</strong> ₹{orderinfo.billamt?.toFixed(2)}</p>
-              <p><strong>Delivery Address:</strong> {orderinfo.saddr || "Not specified"}</p>
+              <p>
+                <strong>Total Amount:</strong> ₹{orderinfo.billamt?.toFixed(2)}
+              </p>
+              <p>
+                <strong>Delivery Address:</strong>{" "}
+                {orderinfo.saddr || "Not specified"}
+              </p>
             </div>
           </div>
         </div>
@@ -176,13 +211,23 @@ function OrderSummary() {
                             <img
                               src={`/uploads/${item.picture}`}
                               alt={item.ProdName}
-                              style={{ width: "50px", height: "50px", objectFit: "cover", marginRight: "15px" }}
-                              onError={(e) => { e.target.onerror = null; e.target.src = "/noimage.jpg"; }}
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                objectFit: "cover",
+                                marginRight: "15px",
+                              }}
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "/noimage.jpg";
+                              }}
                             />
                           )}
                           <div>
                             <h6 className="mb-0">{item.ProdName}</h6>
-                            <small className="text-muted">SKU: {item._id?.substring(0, 8)}</small>
+                            <small className="text-muted">
+                              SKU: {item._id?.substring(0, 8)}
+                            </small>
                           </div>
                         </div>
                       </td>
@@ -201,8 +246,12 @@ function OrderSummary() {
         )}
 
         <div className="order-actions text-center mt-5">
-          <Link to="/categories" className="button mx-2">Continue Shopping</Link>
-          <Link to="/orderhistory" className="button mx-2">View My Orders</Link>
+          <Link to="/categories" className="button mx-2">
+            Continue Shopping
+          </Link>
+          <Link to="/orderhistory" className="button mx-2">
+            View My Orders
+          </Link>
         </div>
       </div>
     </>
