@@ -1,88 +1,100 @@
 # 🛍️ Trend-Haven — Full Stack E-Commerce Website
 
-Welcome to **Trend-Haven**, a full-featured e-commerce platform where users can browse products, manage carts, and place orders — while admins control the entire catalog and order system.
+**Trend-Haven** is a modern full-featured e-commerce platform where users can browse products, manage carts, and place orders — while admins manage the entire catalog, orders, users, and more through a secure dashboard.
 
 ---
 
-## 🧩 Features
+## 🧩 Key Features
 
 ### 👤 User Side
-
-- ✅ **User Registration & Login**
-- 🔐 **Change Password Feature**
-- 🔎 **Search Products by Keyword**
-- 🛒 **Add to Cart & Place Order**
-- 🧾 **View Past Orders with Order History**
-- 🧱 **Client-side Route Protection for Authenticated Users**
-- 🚫 **Cannot place orders or access cart without logging in**
-- 📱 **Mobile-friendly layout for smooth browsing on all devices**
-
----
+- ✅ User Registration & Login
+- 🔐 Change Password Functionality
+- 🔎 Product Search by Keyword
+- 🛒 Add to Cart & Place Order
+- 💬 **TrendBot Chat Assistant** (Gemini API Integration) for fashion suggestions
+- 🧾 View Order History
+- 🧱 Route Protection for Authenticated Users
+- 🚫 Cart & Order access restricted to logged-in users
+- 📱 Fully Responsive Design
 
 ### 🛠️ Admin Panel
+- 🧑‍💻 Secure Admin Login (Role-Based)
+- 📦 Manage Categories & Subcategories
+- ➕ Add, Update, Delete Products
+- 📷 **Upload Product Images via Cloudinary**
+- 🔎 Search & Manage Users
+- 📊 View & Filter All Orders
+- 🔄 Update Order Status (Pending → Shipped → Delivered)
+- 🧾 View Order Details with Product Breakdown
+- 🔒 All Admin Routes Fully Protected
 
-- 🧑‍💻 **Admin Login with Role-Based Access**
-- 📦 **Manage Categories & Subcategories**
-- ➕ **Add, Edit, or Delete Products**
-- 🧑 **Search & Manage Users**
-- 📊 **View All Orders with Filtering**
-- 🔄 **Update Order Status** (Pending → Shipped → Delivered)
-- 🛡️ **Admin Routes Fully Protected**
-- 📥 **View Order Details with Product Breakdown**
-
----
-
-### 🧠 Additional Features
-
-- 💬 **Frontend and Backend Connected via REST APIs**
-- 🔁 **Persistent Cart Data via React State**
-- 🕵️ **404 Pages for Invalid Routes**
-- 🌐 **Clean UI/UX with basic animations and hover effects**
-- 🧩 **Modular code structure for easy future scaling**
+### 🧠 Extra Highlights
+- 💳 **Razorpay Payment Gateway Integration (LIVE)**
+- 💬 **AI-based TrendBot** for personalized fashion advice
+- 🌐 REST API Integration between Frontend & Backend
+- 🛒 Persistent Cart using React State
+- ✨ Smooth UI/UX with hover effects & animations
+- 🧩 Modular Folder Structure for Clean Scalability
 
 ---
 
 ## 🧑‍💻 Tech Stack
 
-| Layer       | Technology               |
-|-------------|--------------------------|
-| Frontend    | HTML, CSS, React.js      |
-| Backend     | Node.js, Express.js      |
-| Database    | MongoDB                  |
-| Auth        | Basic Auth (No JWT)      |
-| State Mgmt  | React State (No Redux)   |
+| Layer      | Technology                |
+|------------|---------------------------|
+| Frontend   | HTML, CSS, React.js       |
+| Backend    | Node.js, Express.js       |
+| Database   | MongoDB Atlas             |
+| Auth       | Basic Auth (Session-based)|
+| State Mgmt | React State               |
+| Payments   | **Razorpay (Live)**       |
+| Cloud      | **Cloudinary** for images |
+| AI Chatbot | **Gemini API (TrendBot)** |
+
+---
+
+## 🗂️ Project Structure
+<pre> Trend-Haven/ ├── client/ │ ├── node_modules/ │ ├── project pics/ │ ├── public/ │ ├── src/ │ │ ├── Components/ │ │ ├── App.css │ │ ├── App.js │ │ ├── App.test.js │ │ ├── index.css │ │ ├── index.js │ │ ├── logo.svg │ │ ├── reportWebVitals.js │ │ ├── setupTests.js │ ├── .env │ ├── package-lock.json │ ├── package.json │ ├── server/ │ ├── node_modules/ │ ├── public/ │ ├── .env │ ├── package-lock.json │ ├── package.json │ ├── server.js │ ├── .gitignore └── README.md </pre>
 
 ---
 
 ## 🚀 Installation & Setup
-1️⃣ Clone the Repository
+<pre>1️⃣ Clone the Repository
 git clone https://github.com/harshulchawla1408/Trend-Haven.git
 cd Trend_Haven
 
-2️⃣ Install Dependencies
+2️⃣ Install Dependencies for both client and server folders (In separate terminals)
+cd client
 npm install
 
-3️⃣ Run the Application
-- 🔧 Start Backend Server: **npm run server**
-- 💻 Start Frontend Server (in a separate terminal): **npm start**
+cd server
+npm install
 
-Now, it will open http://localhost:3000 in your browser.
+3️⃣ Set Up Environment Variables
+
+MONGO_URI=mongodb+srv://Harshul:1408@trend-haven.teqr517.mongodb.net/projectdb?retryWrites=true&w=majority&appName=Trend-Haven
+CLOUDINARY_CLOUD_NAME=de2nvgvqw
+CLOUDINARY_API_KEY=974177579554955
+CLOUDINARY_API_SECRET=7FRqVdGojkLofVOYtZUgEro5qIQRAZORPAY_KEY_ID=rzp_live_mbV46CRmLqswSL
+RAZORPAY_KEY_SECRET=phEoxTLx7h6tcNethMcHCQfc
+GOOGLE_GEMINI_API_KEY=AIzaSyDhL7EtkmEHYngMjwNmLH5QHclaeRpQniI
+REACT_APP_RAZORPAY_KEY_ID=rzp_live_mbV46CRmLqswSL
+
+4️⃣ Run the Application
+- 🔧 Start server: npm run dev
+- 💻 Start client: npm start
+
+Now, it will open http://localhost:3000 in your browser.</pre>
 
 ---
 
 ## 🌱 Future Improvements
 
 - ✅ **Add JWT-based secure authentication**
-- 💳 **Integrate payment gateways (Razorpay/Stripe)**
 - 🧠 **Add product reviews and ratings**
 - 📊 **Build admin dashboard with order/product analytics**
 - 📦 **Add inventory management with stock tracking**
-
----
-
-## 📸 UI Highlights
-
-Basic but attractive UI with clean and intuitive design for both **User** and **Admin** dashboards.
+- 🔔 **Email Notifications for Order Updates**
 
 ---
 
