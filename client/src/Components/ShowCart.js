@@ -145,7 +145,7 @@ function ShowCart() {
         </div>
       </div>
 
-      <style jsx="true">{`
+<style jsx="true">{`
   .show-cart-wrapper .banner {
     background: linear-gradient(to right, #007bff, #00c6ff);
     color: white;
@@ -216,7 +216,7 @@ function ShowCart() {
   }
 
   .show-cart-wrapper .home-btn {
-    background-color:rgb(7, 116, 233);
+    background-color: rgb(7, 116, 233);
     color: white;
     padding: 10px 20px;
     text-decoration: none;
@@ -249,25 +249,68 @@ function ShowCart() {
   }
 
   @media (max-width: 768px) {
-    .show-cart-wrapper .cart-table th,
-    .show-cart-wrapper .cart-table td {
+    .show-cart-wrapper .container {
+      padding: 15px;
+    }
+
+    .show-cart-wrapper h2 {
+      font-size: 20px;
+      text-align: center;
+    }
+
+    .show-cart-wrapper .cart-table {
+      display: block;
+      width: 100%;
+      overflow-x: auto;
       font-size: 14px;
-      padding: 8px;
+    }
+
+    .show-cart-wrapper .cart-table thead {
+      white-space: nowrap;
+    }
+
+    .show-cart-wrapper .product-img {
+      max-width: 60px;
+      height: auto;
+      margin: auto;
     }
 
     .show-cart-wrapper .summary-box {
       text-align: center;
+      margin-top: 20px;
     }
 
     .show-cart-wrapper .action-buttons {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
-      margin-top: 20px;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .show-cart-wrapper .btn {
+      width: 100%;
+      max-width: 300px;
+      font-size: 15px;
+    }
+
+    .show-cart-wrapper .cart-table th,
+    .show-cart-wrapper .cart-table td {
+      padding: 8px;
+    }
+
+    .show-cart-wrapper .empty-cart h2 {
+      font-size: 20px;
+    }
+
+    .show-cart-wrapper .home-btn {
+      width: 100%;
+      max-width: 300px;
+      font-size: 15px;
     }
   }
 `}</style>
+
 
     </>
   );

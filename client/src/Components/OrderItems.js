@@ -168,6 +168,81 @@ function OrderItems() {
           )}
         </div>
       </div>
+      <style>
+        {`
+@media (max-width: 768px) {
+  .login .container {
+    padding: 15px;
+  }
+
+  .login h2 {
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .login p.text-muted {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .table {
+    font-size: 14px;
+  }
+
+  .table th,
+  .table td {
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .img-thumbnail {
+    max-width: 50px !important;
+    max-height: 50px !important;
+    margin: auto;
+  }
+
+  .text-end.mt-3 {
+    text-align: center !important;
+    margin-top: 20px;
+  }
+
+  .mt-4 {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .btn {
+    width: 100%;
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .banner1 h3 {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .alert {
+    font-size: 14px;
+  }
+
+  .display-1 {
+    font-size: 3rem;
+  }
+
+  .lead {
+    font-size: 16px;
+    text-align: center;
+  }
+}
+  `}
+      </style>
     </>
   );
 }
