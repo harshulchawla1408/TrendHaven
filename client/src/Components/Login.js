@@ -14,15 +14,25 @@ function Login() {
     e.preventDefault();
     const logindata = { uname, pass };
     try {
-      const resp = await axios.post(`${process.env.REACT_APP_BACKEND}/api/login`, logindata);
+      const resp = await axios.post(
+        `${process.env.REACT_APP_BACKEND}/api/login`,
+        logindata
+      );
+
       if (resp.status === 200) {
-        if (resp.data.statuscode === 0) {
-          toast.warn("Incorrect Username/Password");
-        } else if (resp.data.statuscode === 1) {
-          setudata(resp.data.pdata);
-          sessionStorage.setItem("userdata", JSON.stringify(resp.data.pdata));
+        const { statuscode, message, pdata } = resp.data;
+
+        if (statuscode === -1) {
+          toast.warn("No account found with this username/email.");
+        } else if (statuscode === 0) {
+          toast.warn("Incorrect password. Try again.");
+        } else if (statuscode === 1) {
+          setudata(pdata);
+          sessionStorage.setItem("userdata", JSON.stringify(pdata));
           navigate("/homepage");
           toast.success("Logged in successfully");
+        } else {
+          toast.warn("Login failed. Please try again.");
         }
       } else {
         toast.warn("Some error occurred");
@@ -31,7 +41,6 @@ function Login() {
       toast.error("Server error");
     }
   }
-
   return (
     <>
       {/* Banner */}

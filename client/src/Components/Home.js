@@ -45,27 +45,26 @@ function Home() {
     try {
       const resp = await axios.get(
         `${process.env.REACT_APP_BACKEND}/api/fetchnewprods`,
-        {
-          timeout: 4000,
-        }
+        { timeout: 10000 }
       );
 
-      if (resp.data.statuscode === 1) {
-        setProdsdata(resp.data.proddata || []);
+      if (resp.data.statuscode === 1 && Array.isArray(resp.data.proddata)) {
+        setProdsdata(resp.data.proddata);
       } else {
         setProdsdata([]);
-        console.log("No products found or empty response");
+        setError("No latest products found.");
+        console.warn("No products found or empty response");
       }
     } catch (err) {
-      console.error("Error fetching products:", err);
+      console.error("Error fetching products:", err.message);
       setError("Failed to load products. Please try again later.");
       setProdsdata([]);
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Stop loader
     }
   }
 
-  // Call this in useEffect
+  // Call in useEffect (already correct)
   useEffect(() => {
     fetchlatestprods();
   }, []);
@@ -157,7 +156,7 @@ function Home() {
           </div>
 
           {isLoading ? (
-            <div className="loading">Loading products...</div>
+            <div className="loader">Loading latest products...</div>
           ) : error ? (
             <div className="error-message">{error}</div>
           ) : prodsdata.length === 0 ? (
@@ -430,6 +429,41 @@ function Home() {
       border-radius: 4px;
       text-decoration: none;
     }
+.loader {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #444;
+  padding: 2rem;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+
+.error-message {
+  text-align: center;
+  color: #ff4d4f;
+  background-color: #ffeaea;
+  border: 1px solid #ffcccc;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  font-weight: 500;
+  margin: 1rem auto;
+  width: fit-content;
+  max-width: 90%;
+}
+  @media screen and (max-width: 600px) {
+  .error-message,
+  .loader {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+}
+
   }
 `}
       </style>

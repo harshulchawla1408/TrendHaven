@@ -226,18 +226,31 @@ app.post("/api/signup", async (req, res) => {
 
 //Login page
 app.post("/api/login", async (req, res) => {
-  var result = await SignupModel.find({
-    username: req.body.uname,
-    password: req.body.pass,
-  })
-    .select("-password")
-    .select("-phone");
-  if (result.length === 0) {
-    res.status(200).send({ statuscode: 0 });
-  } else {
-    res.status(200).send({ statuscode: 1, pdata: result[0] });
+  const { uname, pass } = req.body;
+
+  try {
+    const user = await SignupModel.findOne({ username: uname });
+
+    if (!user) {
+      // Username not found
+      return res.status(200).send({ statuscode: -1, message: "User not registered" });
+    }
+
+    if (user.password !== pass) {
+      // Password does not match
+      return res.status(200).send({ statuscode: 0, message: "Incorrect Password" });
+    }
+
+    // Success: remove sensitive data before sending
+    const { password, phone, ...pdata } = user.toObject();
+    return res.status(200).send({ statuscode: 1, pdata });
+
+  } catch (err) {
+    console.error("Login error:", err);
+    return res.status(500).send({ statuscode: -99, message: "Server error" });
   }
 });
+
 
 //Search user
 app.get("/api/searchuser", async (req, res) => {
